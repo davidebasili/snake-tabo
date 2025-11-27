@@ -88,35 +88,24 @@ html, body {
   padding: 0;
   background: #111;
   font-family: Arial, sans-serif;
-  height: 100vh;
-  width: 100vw;
+  height: 100%;
+  width: 100%;
   box-sizing: border-box;
-  overflow: hidden !important;
-  overscroll-behavior: none;
-  touch-action: none !important;
-  -ms-touch-action: none !important;
-  -webkit-overflow-scrolling: none !important;
-  -moz-user-select: none !important;
-  -webkit-user-select: none !important;
-  user-select: none !important;
-  position: fixed !important;
-  inset: 0;
+  overflow: hidden;
 }
+
 .container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;     /* centra orizzontalmente */
   text-align: center;
   color: white;
-  max-width: 95vw;
-  margin: auto;
-  padding: 10px 5vw;
-  overflow: hidden !important;
-  touch-action: none !important;
-  -ms-touch-action: none !important;
-  -webkit-user-select: none !important;
-  -moz-user-select: none !important;
-  user-select: none !important;
-  height: 100vh;
-  width: 100vw;
-  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  padding: 10px;
+  padding-top: 20px;
+  box-sizing: border-box;
 }
 .btn {
   height: 8vh;       
@@ -141,6 +130,7 @@ html, body {
 h1 {
   font-size: clamp(1.5rem, 4vw, 3rem);
   margin-bottom: 20px;
+  margin-top: 0;
 }
 
 .best-score {

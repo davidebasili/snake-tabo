@@ -169,20 +169,21 @@ function draw() {
     ctx.value.fillStyle = "red";
     ctx.value.fillRect(food.x * cellSize.value, food.y * cellSize.value, cellSize.value, cellSize.value);
 
-    //snake
-    snake.forEach((seg, index ) => {
-        if(index === 0){
-            if(faceImage){
-                ctx.value.drawImage(faceImage, seg.x * cellSize.value, seg.y * cellSize.value, cellSize.value, cellSize.value);
-            } else {
-                ctx.value.fillStyle = "lime";
-                ctx.value.fillRect(seg.x * cellSize.value, seg.y * cellSize.value, cellSize.value, cellSize.value);
-            }
-        }else{
-            ctx.value.fillStyle = "lime";
-            ctx.value.fillRect(seg.x * cellSize.value, seg.y * cellSize.value, cellSize.value, cellSize.value);
-        }
-    });
+    //snake body
+    ctx.value.fillStyle = "lime";
+    for (let i = 1; i < snake.length; i++) {
+        const seg = snake[i];
+        ctx.value.fillRect(seg.x * cellSize.value, seg.y * cellSize.value, cellSize.value, cellSize.value);
+    }
+
+    //snake head
+    const head = snake[0];
+    if(faceImage){
+        ctx.value.drawImage(faceImage, head.x * cellSize.value, head.y * cellSize.value, cellSize.value, cellSize.value);
+    } else {
+        ctx.value.fillStyle = "lime";
+        ctx.value.fillRect(head.x * cellSize.value, head.y * cellSize.value, cellSize.value, cellSize.value);
+    }
 }
 
 function handleResize() {
@@ -199,6 +200,7 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
+    clearInterval(interval);
     window.removeEventListener("keydown", changeDirection);
     window.removeEventListener("resize", handleResize);
 });

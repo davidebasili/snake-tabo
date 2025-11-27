@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { ref, onBeforeUnmount } from "vue";
 
 const emit = defineEmits(["update:selectedSong"]);
 
@@ -14,50 +14,53 @@ const songs = [
 
 
 const currentSongIndex = ref(0);
-const audio = ref(null);
+let audio = new Audio();
 const isPlaying = ref(false);
 
 function setupAudioEvents() {
-    if (!audio.value) return;
-    audio.value.addEventListener('play', () => {
+    audio.addEventListener('play', () => {
         isPlaying.value = true;
     });
-    audio.value.addEventListener('pause', () => {
+    audio.addEventListener('pause', () => {
         isPlaying.value = false;
     });
-    audio.value.addEventListener('ended', () => {
+    audio.addEventListener('ended', () => {
         isPlaying.value = false;
     });
 }
 
+// Inizializza l'audio una volta sola
+audio.loop = true;
+audio.volume = 0.3;
+setupAudioEvents();
+
 function startAudio() {
-    audio.value = new Audio(songs[currentSongIndex.value].file);
-    audio.value.loop = true;
-    audio.value.volume = 0.3;
-    setupAudioEvents();
-    audio.value.play().catch(() => console.log("Click necessario per riprodurre audio"));
+    if (!audio.src) {
+        audio.src = songs[currentSongIndex.value].file;
+    }
+    audio.play().catch(() => console.log("Click necessario per riprodurre audio"));
 }
 
 function changeSong(index) {
     if (index < 0 || index >= songs.length) return;
+    
+    const wasPlaying = !audio.paused;
     currentSongIndex.value = index;
-    if (audio.value) {
-        audio.value.pause();
-        audio.value = new Audio(songs[index].file);
-        audio.value.loop = true;
-        audio.value.volume = 0.3;
-        setupAudioEvents();
-        audio.value.play().catch(() => console.log("Click necessario per riprodurre audio"));
+    
+    audio.src = songs[index].file;
+    
+    if (wasPlaying) {
+        audio.play().catch(() => console.log("Click necessario per riprodurre audio"));
     }
 }
 
 function togglePlay() {
-    if (!audio.value) {
+    if (!audio.src) {
         startAudio();
-    } else if (audio.value.paused) {
-        audio.value.play();
+    } else if (audio.paused) {
+        audio.play();
     } else {
-        audio.value.pause();        
+        audio.pause();        
     }
 }
 
@@ -72,6 +75,10 @@ function prevSong() {
     changeSong(currentSongIndex.value);
     emit("update:selectedSong", songs[currentSongIndex.value]);
 }
+
+onBeforeUnmount(() => {
+    audio.pause();
+});
 </script>
 
 <template>
@@ -79,7 +86,6 @@ function prevSong() {
         <p>🎵 Radio</p>
         <p class="current-song-name">{{ songs[currentSongIndex].name }}</p>
         <div class="controls">
-            <p>{{ songs.name }}</p>
             <button class="arrowMusic" @click="prevSong">◀</button>
             <button 
                 @click="togglePlay" 
